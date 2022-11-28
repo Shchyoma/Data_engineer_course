@@ -1,0 +1,150 @@
+# Задание 2.3 SQL
+
+Глобальная задача – создать БД сотрудников компании.
+
+Для этого нам необходимо:
+
+1. Создать таблицу с основной информацией о сотрудниках: 
+ФИО, дата рождения, дата начала работы, должность, уровень сотрудника (jun, middle, senior, lead), 
+уровень зарплаты, идентификатор отдела, наличие/отсутствие прав(True/False). 
+При этом в таблице обязательно должен быть уникальный номер для каждого сотрудника.
+
+```sql
+CREATE TABLE IF NOT EXISTS employees
+(
+    id int generated always as identity primary key,
+    lastname character varying(255) NOT NULL,
+    birthdate date,
+    startjob date,
+    post character varying(30) COLLATE pg_catalog."default",
+    grade character varying(30) COLLATE pg_catalog."default",
+    salary integer,
+		dep_id integer,
+    driver_lic boolean,
+    FOREIGN KEY(dep_id) REFERENCES departments(id)
+)
+
+INSERT INTO employees
+	(lastname, 
+	 birthdate, 
+	 startjob, 
+	 post, 
+	 grade, 
+	 salary, 
+	 depid, 
+	 driver_lic)
+VALUES
+	('Игнатьева Александра', '04/03/1987', '02/03/2021', 
+	 'Специалист', 'Junior', 350, 2, False),
+	('Соболев Виктор', '09/09/1991', '01/14/2019',
+	 'Руководитель', 'Lead', 1420, 1, True), 
+	('Макаров Илья', '07/15/1992', '10/07/2021', 
+	 'Бухгалтер', 'Middle', 520, 2, True),
+	('Васильева Анна', '09/23/1982', '01/14/2019', 
+	 'Бухгалер', 'Senior', 990, 2, True),
+	('Рыков Сергей', '01/28/2000', '09/03/2022', 
+	 'Программист', 'Junior', 420, 1, False),
+	('Казаченко Артем', '11/18/1989', '12/19/2019', 
+	 'Инженер', 'Middle', 550, 1, False);
+```
+
+2. Для будущих отчетов аналитики попросили вас создать еще одну таблицу с информацией по отделам – 
+в таблице должен быть идентификатор для каждого отдела, название отдела (например. Бухгалтерский или IT отдел), 
+ФИО руководителя и количество сотрудников.
+
+```sql
+CREATE TABLE IF NOT EXISTS departments 
+(
+	id SERIAL PRIMARY KEY,
+	depname VARCHAR(30),
+	leadname VARCHAR(30),
+	numemp INT NOT NULL
+);
+
+INSERT INTO departments
+(depname, leadname, numemp)
+VALUES 
+('**IT отдел**', 'Соболев Виктор', 2),
+('Бухгалтерия', 'Васильева Анна', 2);
+```
+
+3. На кону конец года и необходимо выплачивать сотрудникам премию. 
+Премия будет выплачиваться по совокупным оценкам, которые сотрудники получают в каждом квартале года. 
+Создайте таблицу, в которой для каждого сотрудника будут его оценки за каждый квартал. 
+Диапазон оценок от A – самая высокая, до E – самая низкая.
+
+```sql
+CREATE TABLE IF NOT EXISTS bonus_rank 
+(
+	rankid SERIAL PRIMARY KEY,
+	empid INT,
+	I VARCHAR(1),
+	II VARCHAR(1),
+	III VARCHAR(1),
+	IV VARCHAR(1),
+	FOREIGN KEY(empid) REFERENCES employees(id)
+);
+
+INSERT INTO bonus_rank
+(empid, I, II, III, IV) 
+VALUES 
+(1, 'B', 'C', 'D', 'B'),
+(2, 'A', 'B', 'A', 'A'),
+(3, 'A', 'B', 'C', 'B'),
+(4, 'B', 'A', 'A', 'B'),
+(5, 'A', 'B', 'E', 'C'),
+(6, 'C', 'B', 'A', 'A');
+```
+
+5. Ваша команда расширяется и руководство запланировало открыть новый отдел – отдел 
+Интеллектуального анализа данных. На начальном этапе в команду наняли одного руководителя отдела и двух сотрудников. 
+Добавьте необходимую информацию в соответствующие таблицы.
+
+```sql
+INSERT INTO departments VALUES 
+('**Интеллектуальный анализ данных**', 'Гордиенко Кирилл', 2);
+
+INSERT INTO employees VALUES
+('Гордиенко Кирилл', '08/31/1993', '25/11/2022', 
+	 'Старший аналитик', 'Senior', 1200, 3, True),
+('Колесникова Тамара', '03/08/1985', '25/11/2022', 
+	 'Аналитик', 'Middle', 890, 3, True),
+('Максимов Даниил', '10/26/1994', '25/11/2022', 
+	 'Стажер', 'Junior', 320, 3, False);
+```
+
+6. Теперь пришла пора анализировать наши данные – напишите запросы для получения следующей информации:
+
+6.1 Уникальный номер сотрудника, его ФИО и стаж работы – для всех сотрудников компании
+
+```sql
+SELECT id, lastname, (CURRENT_DATE - startjob)/365
+FROM employees
+```
+6.2 Уникальный номер сотрудника, его ФИО и стаж работы – только первых 3-х сотрудников
+
+```sql
+SELECT id, lastname, (CURRENT_DATE - startjob)/365
+FROM employees
+LIMIT 3
+```
+
+6.3 Уникальный номер сотрудников - водителей
+
+```sql
+SELECT id
+FROM employees
+WHERE driver_lic = true
+```
+
+6.4 Выведите номера сотрудников, которые хотя бы за 1 квартал получили оценку D или E
+
+```sql
+SELECT empid
+FROM bonus_score
+WHERE i IN ('D', 'E') OR ii IN ('D', 'E')
+OR iii IN ('D', 'E') OR iv IN ('D', 'E')
+```
+
+6.5 Выведите самую высокую зарплату в компании.
+SELECT MAX(salary) FROM employees
