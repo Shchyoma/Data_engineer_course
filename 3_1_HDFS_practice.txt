@@ -1,0 +1,64 @@
+[cloudera@quickstart ~]$ hdfs dfs -copyFromLocal /home/cloudera/Desktop/v-i-m1.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -copyFromLocal /home/cloudera/Desktop/v-i-m2.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -copyFromLocal /home/cloudera/Desktop/v-i-m3.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -copyFromLocal /home/cloudera/Desktop/v-i-m4.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -ls
+Found 4 items
+-rw-r--r--   1 cloudera cloudera     736519 2022-12-10 03:53 v-i-m1.txt
+-rw-r--r--   1 cloudera cloudera     770324 2022-12-10 03:54 v-i-m2.txt
+-rw-r--r--   1 cloudera cloudera     843205 2022-12-10 03:54 v-i-m3.txt
+-rw-r--r--   1 cloudera cloudera     697960 2022-12-10 03:54 v-i-m4.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -getmerge /user/cloudera/v-i-m1.txt /user/cloudera/v-i-m2.txt /user/cloudera/v-i-m3.txt /user/cloudera/v-i-m4.txt /home/cloudera/VIM.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -copyFromLocal /home/cloudera/VIM.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -ls
+Found 5 items
+-rw-r--r--   1 cloudera cloudera    3048008 2022-12-10 04:21 VIM.txt
+-rw-r--r--   1 cloudera cloudera     736519 2022-12-10 03:53 v-i-m1.txt
+-rw-r--r--   1 cloudera cloudera     770324 2022-12-10 03:54 v-i-m2.txt
+-rw-r--r--   1 cloudera cloudera     843205 2022-12-10 03:54 v-i-m3.txt
+-rw-r--r--   1 cloudera cloudera     697960 2022-12-10 03:54 v-i-m4.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -chmod 755 /user/cloudera/VIM.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -ls
+Found 5 items
+-rwxr-xr-x   1 cloudera cloudera    3048008 2022-12-10 04:21 VIM.txt
+-rw-r--r--   1 cloudera cloudera     736519 2022-12-10 03:53 v-i-m1.txt
+-rw-r--r--   1 cloudera cloudera     770324 2022-12-10 03:54 v-i-m2.txt
+-rw-r--r--   1 cloudera cloudera     843205 2022-12-10 03:54 v-i-m3.txt
+-rw-r--r--   1 cloudera cloudera     697960 2022-12-10 03:54 v-i-m4.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -du -h
+2.9 M    2.9 M    VIM.txt
+719.3 K  719.3 K  v-i-m1.txt
+752.3 K  752.3 K  v-i-m2.txt
+823.4 K  823.4 K  v-i-m3.txt
+681.6 K  681.6 K  v-i-m4.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -setrep 2 /user/cloudera
+Replication 2 set: /user/cloudera/VIM.txt
+Replication 2 set: /user/cloudera/v-i-m1.txt
+Replication 2 set: /user/cloudera/v-i-m2.txt
+Replication 2 set: /user/cloudera/v-i-m3.txt
+Replication 2 set: /user/cloudera/v-i-m4.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -du -h
+2.9 M    5.8 M  VIM.txt
+719.3 K  1.4 M  v-i-m1.txt
+752.3 K  1.5 M  v-i-m2.txt
+823.4 K  1.6 M  v-i-m3.txt
+681.6 K  1.3 M  v-i-m4.txt
+
+[cloudera@quickstart ~]$ hdfs dfs -cat /user/cloudera/VIM.txt | wc -l
+10272
+
+
+
+
